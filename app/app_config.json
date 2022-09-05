@@ -1,0 +1,16 @@
+{
+    "debug": true,
+    "canvasHeight": 400,
+    "canvasWidth": 400,
+    "canvasBackgroundColor": "red",
+    "numberOfEntities": 0,
+    "subdivideCount": 4,
+    "particleSize": 20,
+    "maxWHsplit": 50,
+    "noVelocity": true,
+    "velocityMin": 0,
+    "velocityMax": 0.1,
+    "noPosition": true,
+    "xMin": 0.1,
+    "xMax": 150
+}
