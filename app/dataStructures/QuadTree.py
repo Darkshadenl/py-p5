@@ -1,6 +1,4 @@
-from cmath import log
 import logging
-from app.helpers.ErrorObject import errorObject
 from app.config import data as config
 from p5 import Vector
 
@@ -178,7 +176,7 @@ class QuadTree:
                 s.clearEntitiesInChildren()
         else:
             self.entities.clear()
-        pass
+        
     
     def clearOne(self):
         if len(self.squares) > 0:
@@ -186,4 +184,23 @@ class QuadTree:
                 s.clearOne()
         elif len(self.entities) > 0:
             self.entities.pop()
-        pass
+        
+    
+    def getAllSquareMetadata(self):
+        if len(self.squares) > 0:
+            squareMetaData = []
+            
+            for square in self.squares.values():
+                squareMetaData.extend(square.getAllSquareMetadata())
+            
+            return squareMetaData
+        
+        if len(self.squares) == 0:
+            metadata = [
+            self.northWestCorner,
+            self.northEastCorner,
+            self.southWestCorner,
+            self.southEastCorner  ]            
+            
+            return metadata
+            

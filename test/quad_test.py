@@ -7,12 +7,13 @@ from app.dataStructures.QuadTree import QuadTree
 from app.config import data as c
 from unittest.mock import MagicMock
 
+from app.model.MainModel import MainModel
+
 
 class TestQuad(unittest.TestCase):
      
     @classmethod
     def setUpClass(cls): 
-        print('run only once')
         logger = logging.getLogger()
         logger.level = logging.DEBUG
         stream_handler = logging.StreamHandler(sys.stdout)
@@ -110,6 +111,68 @@ class TestQuad(unittest.TestCase):
         
         self.assertEqual(baseLevelNorthWestLength, 2)
         self.assertEqual(levelOneNorthEastLength, 2)
+        
+    def test_get_square_metadata(self):
+        numberOfEntities = 20
+        mainModel = MainModel(400, 400 , numberOfEntities)
+        entities = []
+        
+        for index in range(numberOfEntities):
+            vXY = mainModel.setupPosition()
+            velocity = mainModel.setupVelocity()
+            particle = Particle(vXY, velocity)
+            entities.append(particle)
+            self.q.add(particle)
+        
+        metaData = self.q.getAllSquareMetadata()
+        
+        # minimize data development
+        used = []
+        biggest = None
+        
+        for data in metaData:
+            beenBigger = False
+            beenSmaller = False
+            
+            if len(used) == 0:
+                used.append(data)
+                biggest = data
+            else:
+                l = self.compare(data, biggest)
+                
+                if l == 0 :
+                    continue
+                
+                if (l > 0):
+                    biggest = data
+                    used.append(data)
+                    
+                if (l < 0):
+                    pass
+                    # for i in range(len(used) - 2):
+                    #     v = used[i]
+                    #     c = self.compare(data, v)
+                        
+                    #     if c == 0:
+                    #         continue
+                    #     if c == -1:
+                    #         beenSmaller = True
+                    #     if c == 1:
+                    #         beenBigger = True
+                        
+                    #     if (beenSmaller and beenBigger):
+                    #         # found a position
+                    #         used.insert(i, data)
+                    #         continue
+                
+        self.assertEqual(40, len(metaData))
+        
 
         
-        
+    def compare(self, v1, v2):
+        if v1 == v2:
+            return 0
+        if v1 < v2:
+            return -1
+        if v1 > v2:
+            return 1

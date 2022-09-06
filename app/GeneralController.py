@@ -33,30 +33,11 @@ class GeneralController:
         count = 0
         iterator = iter(entities)
         
-        # TODO herschrijf dit. 
-        while(count < len(entities)):
-            particle = next(iterator)
-            if not particle:
-                break
-            neighbours = particle.getNeighbours()
-            quad = particle.quadTree
-            self.__drawVectorBorder(quad.northWestCorner, quad.northEastCorner)
-            self.__drawVectorBorder(quad.northEastCorner, quad.southEastCorner)
-            self.__drawVectorBorder(quad.southEastCorner, quad.southWestCorner)
-            self.__drawVectorBorder(quad.southWestCorner, quad.northWestCorner)
-            
-            count += len(neighbours)
-            if len(neighbours) == 0:
-                continue
-            if len(neighbours) == 1:
-                particle = neighbours[0]
-                particle.changeColor()
-                continue    
-            for index in range(len(neighbours)):
-                particle = neighbours[index]
-                i = index + 1
-                nextParticle = neighbours[i] if i < len(neighbours) else None
-                self.__drawParticleBorder(particle, nextParticle) 
+        # TODO draw borders of Quadtree squares.
+        squareMetaData = self.mainModel.quadtree.getAllSquareMetadata()
+        
+        
+        # TODO draw borders of entities
    
         
     

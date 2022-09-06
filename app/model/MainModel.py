@@ -50,4 +50,3 @@ class MainModel:
         for e in self.entities:
             ents.extend(e)
         return ents
-        
