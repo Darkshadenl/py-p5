@@ -88,12 +88,12 @@ class TestQuad(unittest.TestCase):
         
     def test_desplit_from_level_two(self):
         particles = [
-            Particle(MagicMock(), Vector(108, 10), Vector(108, 10)),
-            Particle(MagicMock(), Vector(109, 10), Vector(109, 10)),
-            Particle(MagicMock(), Vector(152, 10), Vector(110, 10)),
-            Particle(MagicMock(), Vector(160, 10), Vector(111, 10)),
-            Particle(MagicMock(), Vector(50, 10), Vector(112, 10)),
-            Particle(MagicMock(), Vector(50, 10), Vector(113, 10))
+            Particle(Vector(108, 10), Vector(108, 10)),
+            Particle(Vector(109, 10), Vector(109, 10)),
+            Particle(Vector(152, 10), Vector(110, 10)),
+            Particle(Vector(160, 10), Vector(111, 10)),
+            Particle(Vector(50, 10), Vector(112, 10)),
+            Particle(Vector(50, 10), Vector(113, 10))
         ]
         
         for v in particles:
@@ -115,64 +115,42 @@ class TestQuad(unittest.TestCase):
     def test_get_square_metadata(self):
         numberOfEntities = 20
         mainModel = MainModel(400, 400 , numberOfEntities)
-        entities = []
         
         for index in range(numberOfEntities):
             vXY = mainModel.setupPosition()
             velocity = mainModel.setupVelocity()
             particle = Particle(vXY, velocity)
-            entities.append(particle)
             self.q.add(particle)
         
-        metaData = self.q.getAllSquareMetadata()
-        
-        # minimize data development
-        used = []
-        biggest = None
-        
-        for data in metaData:
-            beenBigger = False
-            beenSmaller = False
-            
-            if len(used) == 0:
-                used.append(data)
-                biggest = data
-            else:
-                l = self.compare(data, biggest)
-                
-                if l == 0 :
-                    continue
-                
-                if (l > 0):
-                    biggest = data
-                    used.append(data)
-                    
-                if (l < 0):
-                    pass
-                    # for i in range(len(used) - 2):
-                    #     v = used[i]
-                    #     c = self.compare(data, v)
-                        
-                    #     if c == 0:
-                    #         continue
-                    #     if c == -1:
-                    #         beenSmaller = True
-                    #     if c == 1:
-                    #         beenBigger = True
-                        
-                    #     if (beenSmaller and beenBigger):
-                    #         # found a position
-                    #         used.insert(i, data)
-                    #         continue
-                
+        metaData = self.q.getAllSquareMetadataFlat()
         self.assertEqual(40, len(metaData))
+        
+    
+    def test_order_of_sorted_squares(self):
+        mainModel = MainModel(400, 400 , 4)
+        p1 = Particle(Vector(100, 0, 0), Vector(0,0,0))
+        p2 = Particle(Vector(100, 200, 0), Vector(0,0,0))
+        p3 = Particle(Vector(50, 200, 0), Vector(0,0,0))
+        p4 = Particle(Vector(50, 300, 200), Vector(0,0,0))
+        
+        mainModel.quadTree.add(p1)
+        mainModel.quadTree.add(p2)
+        mainModel.quadTree.add(p3)
+        mainModel.quadTree.add(p4)
+        
+        metaData = mainModel.getAllSquareCoordinatesSorted()
+        
+        expected = [
+            Vector(0,0,0),
+            Vector(0,400,0),
+            Vector(400,0,0),
+            Vector(400,400,0)
+        ]
+        
+        self.assertEqual(metaData, expected)
+        
+        
         
 
         
-    def compare(self, v1, v2):
-        if v1 == v2:
-            return 0
-        if v1 < v2:
-            return -1
-        if v1 > v2:
-            return 1
+    

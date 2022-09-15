@@ -1,7 +1,8 @@
+from collections import namedtuple
 import logging
 from app.config import data as config
 from p5 import Vector
-
+from app.helpers.ActiveSquaresTracker import squareTracker
 
 class QuadTree:
 
@@ -13,6 +14,8 @@ class QuadTree:
         self.depth = depth
         self.tag = tag
         self.parent = parent
+        self.activeSquaresTracker = squareTracker
+        self.tracked = False
 
         self.zeroPoint = vZeroPoint
         self.northWestCorner = vZeroPoint
@@ -27,6 +30,10 @@ class QuadTree:
         self.halfWidth = self.width / 2
         self.halfHeight = self.height / 2
 
+
+    def __repr__(self) -> str:
+        return f"{self.tag} {self.depth}"
+
     def add(self, entity):
         if not self.subdivided:
             self.logger.info(f'entity with x: {entity.pos.x}')
@@ -34,6 +41,11 @@ class QuadTree:
             self.logger.info(entity)
             self.entities.append(entity)
             entity.setQuadTree(self)
+            if not self.tracked:
+                self.tracked = True
+                self.activeSquaresTracker.add(self)
+                
+            
             if self.__shouldSubdivide():
                 self.__subdivide()
         elif self.subdivided:
@@ -54,7 +66,7 @@ class QuadTree:
         return False
 
     def __shouldSubdivide(self):
-        if len(self.entities) <= self.subDivideCount:
+        if len(self.entities) < self.subDivideCount:
             return False
         return True
 
@@ -125,9 +137,13 @@ class QuadTree:
         except:
             self.logger.debug('entity not in list')
         
-        if (len(self.entities) == 0 and not self.subdivided):
+        if len(self.entities) == 0:
+            self.activeSquaresTracker.remove(self)
+            self.tracked = False
+            
             # Maybe desplit? Quadtree version
-            self.parent.desplitCheck()
+            if not self.subdivided:
+                self.parent.desplitCheck()
         
     def desplitCheck(self):
         if self.subdivided == False:
@@ -149,22 +165,23 @@ class QuadTree:
     def __getSquaresEntityAmount(self) -> int:
         amount = 0
         for sq in self.squares.values():
-            amount += len(sq.entities)
+            if (sq.subdivided):
+                return float('inf')
+            else:
+                amount += len(sq.entities)
         return amount
 
     def __desplit(self):
-        # if self.hasDesplit == True:
-        #     return
         entities = self.getAllEntitiesClear()
         self.entities.extend(entities)
         self.clearEntitiesInChildren()
         self.subdivided = False
         self.squares = {}
-        # self.hasDesplit = True
         
     def clearEntitiesInChildren(self):
         if self.subdivided == False:
             self.entities.clear()
+            self.activeSquaresTracker.remove(self)
             return
         
         for sq in self.squares.values():
@@ -186,7 +203,7 @@ class QuadTree:
             self.entities.pop()
         
     
-    def getAllSquareMetadata(self):
+    def getAllSquareMetadataFlat(self):
         if len(self.squares) > 0:
             squareMetaData = []
             
@@ -204,3 +221,26 @@ class QuadTree:
             
             return metadata
             
+    
+    def getAllSquareMetaDataGrouped(self, data):
+        metadata = namedtuple("metadata", ["northWestCorner", "northEastCorner",
+                                           "southWestCorner", "southEastCorner"])
+        
+        if len(self.squares) == 0:
+            d = metadata (
+            self.northWestCorner,
+            self.northEastCorner,
+            self.southWestCorner,
+            self.southEastCorner  )
+            data.append(d)
+            return data
+        
+        if len(self.squares) > 0: 
+            # current Quad metadata + children metadata. 
+                        
+            for square in self.squares.values():
+                data = square.getAllSquareMetaDataGrouped(data)
+            
+            return data
+        
+        

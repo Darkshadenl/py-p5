@@ -1,6 +1,4 @@
 import logging
-from pprint import pprint
-from app.components.Border import ParticleBorder
 from p5 import *
 from app.components.Particle import Particle
 from model.MainModel import MainModel
@@ -17,30 +15,28 @@ class GeneralController:
         self.mainModel.setup()
         
     def update(self):
-        entities = self.mainModel.quadtree.getAllEntitiesClear()
+        entities = self.mainModel.quadTree.getAllEntitiesClear()
         self.draw(entities)
-        self.drawBorders(entities)
+        self.drawBorders()
 
     def draw(self, entities):
         for entity in entities:
             self.logger.debug('Drawing from generalController')
             entity.draw()
                 
-    def drawBorders(self, entities):
+    def drawBorders(self):
         if (self.enableBorders == False):
             return
-
-        count = 0
-        iterator = iter(entities)
         
-        # TODO draw borders of Quadtree squares.
-        squareMetaData = self.mainModel.quadtree.getAllSquareMetadata()
+        squareMetaData = self.mainModel.quadTree.getAllSquareMetaDataGrouped([])
         
-        
-        # TODO draw borders of entities
+        for metaData in squareMetaData:
+            self.__drawVectorBorder(metaData.northWestCorner, metaData.northEastCorner)
+            self.__drawVectorBorder(metaData.northEastCorner, metaData.southEastCorner)
+            self.__drawVectorBorder(metaData.southEastCorner, metaData.southWestCorner)
+            self.__drawVectorBorder(metaData.southWestCorner, metaData.northWestCorner)
    
         
-    
     def __drawParticleBorder(self, vP1, vP2):
         if vP2 is None:
             return
@@ -51,28 +47,40 @@ class GeneralController:
         line(vP1, vP2)
         stroke("blue")
         stroke_weight(2)
-        pass
+        
     
     def mouse_pressed(self, event):
         self.logger.debug('mouse pressed')
         if c["debug"] == True:
             x = event.x
             y = event.y
-            self.mainModel.quadtree.add(Particle(Vector(x, y), Vector(0, 0)))
-       
+            
+            if c["noVelocity"] == True:
+                self.mainModel.addEntity(Particle(Vector(x, y), Vector(0, 0)))
+            else:
+                vel = Vector(random_uniform(c["velocityMin"], c["velocityMax"]),  
+                          random_uniform(c["velocityMin"], c["velocityMax"]))
+                self.mainModel.addEntity(Particle(Vector(x, y), vel))
+                
 
     def key_pressed(self, event):
         self.logger.debug('key pressed')
-        self.enableBorders = not self.enableBorders
         k = event.key.text
         
         if c["debug"] == True:
+            if k == 'b':
+                self.enableBorders = not self.enableBorders
             if (k == 'd'):
                 self.logger.info("clear all")
                 # delete all particles
-                self.mainModel.quadtree.clearAll()
+                self.mainModel.quadTree.clearAll()
                 pass
             if (k == "o"):
                 self.logger.info("clear one")
-                self.mainModel.quadtree.clearOne()
+                self.mainModel.quadTree.clearOne()
+            if (k == "u"):
+                # clear latest
+                self.mainModel.undo()
+            if k == 'r':
+                self.mainModel.redo()
             
