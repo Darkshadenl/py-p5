@@ -32,6 +32,7 @@ class GeneralController:
             return
         
         # squareMetaData = self.mainModel.quadTree.getAllSquareMetaDataGrouped([])
+        self.mainModel.activeSquaresTracker.refresh()
         squareMetaData = self.mainModel.activeSquaresTracker.active
         
         for metaData in squareMetaData:
@@ -78,10 +79,13 @@ class GeneralController:
     def key_pressed(self, event):
         self.logger.debug('key pressed')
         k = event.key.text
+        if k == 'b':
+            self.enableBorders = not self.enableBorders
+        if k == '5':
+            self.logger.info('refreshing active squares')
+            self.mainModel.activeSquaresTracker.refresh()
         
         if c["debug"] == True:
-            if k == 'b':
-                self.enableBorders = not self.enableBorders
             if (k == 'd'):
                 self.logger.info("clear all")
                 # delete all particles

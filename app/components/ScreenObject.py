@@ -13,7 +13,7 @@ class ScreenObject:
         self.quadTree = None
         
     def setQuadTree(self, quadTree):
-        if (isinstance(quadTree, QuadTree)):
+        if isinstance(quadTree, QuadTree):
             self.quadTree = quadTree
         else:
             raise TypeError("object should be of type Quadtree")

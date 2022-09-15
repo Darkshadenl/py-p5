@@ -182,7 +182,7 @@ class QuadTree:
         elif(isinstance(element, particle.Particle)):
             return self.__isVectorWithinMe(element.pos)
         else:
-            raise TypeError("Only objects of type  or Vector allowed")
+            raise TypeError("Only objects of type Particle or Vector allowed")
 
     def __getSquaresEntityAmount(self) -> int:
         amount = 0
@@ -208,6 +208,7 @@ class QuadTree:
         self.clearEntitiesInChildren()
         self.logger.debug('Setting subdivided to false \n \n')
         self.subdivided = False
+        self.activeSquaresTracker.remove(self.squares)
         self.squares = {}
         
     def clearEntitiesInChildren(self):
