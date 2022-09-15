@@ -3,6 +3,7 @@ from app.config import data as config
 from p5 import ellipse, fill, color as c, random_uniform
 from .MovingObject import MovingObject
 
+
 class Particle(MovingObject):
 
   def __init__(self, vXY, vVelocity):
@@ -10,7 +11,9 @@ class Particle(MovingObject):
     self.changeColor()
     self.logger = logging.getLogger()
     self.particleSize = config["particleSize"]
-    
+
+  def __repr__(self) -> str:
+    return f"{self.pos.x} {self.pos.y}"
 
   def draw(self):
     self.logger.debug('Drawing of particle')

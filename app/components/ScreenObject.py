@@ -1,5 +1,7 @@
 from p5 import Vector
 
+from app.dataStructures.QuadTree import QuadTree
+
 class ScreenObject:
     
     def __init__(self, vXY, width, height):
@@ -11,7 +13,10 @@ class ScreenObject:
         self.quadTree = None
         
     def setQuadTree(self, quadTree):
-        self.quadTree = quadTree
+        if (isinstance(quadTree, QuadTree)):
+            self.quadTree = quadTree
+        else:
+            raise TypeError("object should be of type Quadtree")
         
     def getNeighbours(self):
         qEnts = self.quadTree.entities

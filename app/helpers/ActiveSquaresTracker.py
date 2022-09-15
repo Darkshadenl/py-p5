@@ -7,7 +7,6 @@ class ActiveSquaresTracker:
         
     def add(self, square):
         self.active = np.append(self.active, square)
-        print(self.active)
         
     def remove(self, square):
         if len(self.active) > 0:

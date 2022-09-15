@@ -1,6 +1,7 @@
 from p5 import Vector, random_uniform
 from .ScreenObject import ScreenObject
 from app.config import data as c
+import logging
 
 class MovingObject(ScreenObject):
     
@@ -13,9 +14,15 @@ class MovingObject(ScreenObject):
     def move(self):
         self.pos = self.pos + self.velocity
         self.contain()
-        self.quadTree.desplitCheck()
+        isElementInSquare = self.quadTree.checkElementInSquare(self)
+        if (not isElementInSquare):
+            tempQuadTree = self.quadTree
+            # find new square. self.quadtree automatically gets updated by doing 'add'
+            self.quadTree.head.add(self)                        
+            tempQuadTree.removeEntity(self)
+            tempQuadTree.desplitCheck()
+            logging.debug(f"\n\n Element no longer in square {self.pos.x} {self.pos.y}")
     
-
     def contain(self):
         if self.pos.x > c["canvasWidth"] - self.widthOffset or self.pos.x < 0 + self.widthOffset: 
             self.velocity.x = -self.velocity.x

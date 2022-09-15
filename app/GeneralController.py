@@ -10,7 +10,10 @@ class GeneralController:
         self.logger = logging.getLogger()
         self.width = width
         self.height = height
-        self.enableBorders = False
+        if c["debug"] == True:
+            self.enableBorders = True
+        else: 
+            self.enableBorders = False
         self.mainModel = MainModel(width, height, numberOfEntities)
         self.mainModel.setup()
         
@@ -28,13 +31,23 @@ class GeneralController:
         if (self.enableBorders == False):
             return
         
-        squareMetaData = self.mainModel.quadTree.getAllSquareMetaDataGrouped([])
+        # squareMetaData = self.mainModel.quadTree.getAllSquareMetaDataGrouped([])
+        squareMetaData = self.mainModel.activeSquaresTracker.active
         
         for metaData in squareMetaData:
             self.__drawVectorBorder(metaData.northWestCorner, metaData.northEastCorner)
             self.__drawVectorBorder(metaData.northEastCorner, metaData.southEastCorner)
             self.__drawVectorBorder(metaData.southEastCorner, metaData.southWestCorner)
             self.__drawVectorBorder(metaData.southWestCorner, metaData.northWestCorner)
+            
+            if len(metaData.entities) >= 2:
+                mData = metaData.entities
+                for i in range(0, len(mData)):
+                    try:                        
+                        self.__drawParticleBorder(mData[i], mData[i + 1])
+                    except:
+                        self.__drawParticleBorder(mData[i], mData[0])
+                    
    
         
     def __drawParticleBorder(self, vP1, vP2):
@@ -50,14 +63,13 @@ class GeneralController:
         
     
     def mouse_pressed(self, event):
-        self.logger.debug('mouse pressed')
         if c["debug"] == True:
             x = event.x
             y = event.y
             
             if c["noVelocity"] == True:
                 self.mainModel.addEntity(Particle(Vector(x, y), Vector(0, 0)))
-            else:
+            elif c["noVelocity"] == False:
                 vel = Vector(random_uniform(c["velocityMin"], c["velocityMax"]),  
                           random_uniform(c["velocityMin"], c["velocityMax"]))
                 self.mainModel.addEntity(Particle(Vector(x, y), vel))
@@ -83,4 +95,7 @@ class GeneralController:
                 self.mainModel.undo()
             if k == 'r':
                 self.mainModel.redo()
+            if k == '1':
+                self.logger.info('\nAllEnts')
+                print(len(self.mainModel.quadTree.getAllEntitiesClear()))
             

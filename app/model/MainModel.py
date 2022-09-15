@@ -17,6 +17,7 @@ class MainModel:
         self.width = width
         self.height = height
         self.quadTree = QuadTree(Vector(width, height), Vector(0,0), tag='base')
+        self.quadTree.head = self.quadTree
         self.undoTracker.add(self.quadTree)
         self.activeSquaresTracker = squareTracker
         
@@ -43,20 +44,20 @@ class MainModel:
             self.quadTree.add(particle)
         
     def setupVelocity(self):
-        configVelocity = c["noVelocity"]
+        noVelocity = c["noVelocity"]
         
-        if configVelocity == False:
-            self.logger.info("Random velocity")
-            return Vector(random_uniform(-1.5, 2.1),  random_uniform(-1.5, 1.5))
-        else:
+        if noVelocity == False:
             self.logger.info("Config velocity")
             return Vector(random_uniform(c["velocityMin"], c["velocityMax"]),  
                           random_uniform(c["velocityMin"], c["velocityMax"]))
+        else:
+            self.logger.info("No velocity")
+            return Vector(0,  0)
     
     def setupPosition(self):
-        configPosition = c["noPosition"]
+        noPosition = c["noPosition"]
         
-        if (configPosition == False):
+        if noPosition == False:
             self.logger.info("Random position")
             return Vector(random_uniform(0.1, c["canvasWidth"] - 1),  random_uniform(0.1, c["canvasHeight"] - 1))
         else:

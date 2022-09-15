@@ -3,14 +3,14 @@
     "canvasHeight": 400,
     "canvasWidth": 400,
     "canvasBackgroundColor": "red",
-    "numberOfEntities": 20,
+    "numberOfEntities": 10,
     "subdivideCount": 4,
     "particleSize": 10,
-    "maxWHsplit": 50,
+    "maxWHsplit": 25,
     "noVelocity": false,
-    "velocityMin": 1,
+    "velocityMin": 1.5,
     "velocityMax": 2,
     "noPosition": false,
     "xMin": 0.1,
-    "xMax": 150
+    "xMax": 50
 }
