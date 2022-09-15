@@ -1,37 +1,36 @@
-from importlib.metadata import metadata
 import logging
 
 from app.dataStructures.QuadTree import QuadTree
 from p5 import Vector,  random_uniform
 from app.components.Particle import Particle
 from app.config import data as c
-from app.helpers.ElementTracker import tracker
+from app.helpers.ElementTracker import tracker as undotracker
 from app.helpers.ActiveSquaresTracker import squareTracker
 
 class MainModel:
     
-    def __init__(self, width, height, numberOfEntities) -> None:
-        self.elementTracker = tracker
+    def __init__(self, width, height, numberOfEntities):
+        self.undoTracker = undotracker
         self.entities = []
         self.numberOfEntities = numberOfEntities
         self.logger = logging.getLogger()
         self.width = width
         self.height = height
         self.quadTree = QuadTree(Vector(width, height), Vector(0,0), tag='base')
-        self.elementTracker.add(self.quadTree)
+        self.undoTracker.add(self.quadTree)
         self.activeSquaresTracker = squareTracker
         
     
     def addEntity(self, Particle):
-        self.elementTracker.add(self.quadTree)
+        self.undoTracker.add(self.quadTree)
         self.quadTree.add(Particle)
         
     def undo(self):
-        o = tracker.undo(self.quadTree)
+        o = self.undoTracker.undo(self.quadTree)
         self.quadTree = o
     
     def redo(self):
-        o = tracker.redo()
+        o = self.undoTracker.redo()
         if o is not None:
             self.quadTree = o
     
@@ -71,7 +70,7 @@ class MainModel:
             ents.extend(e)
         return ents
 
-    def getAllSquareCoordinatesSorted(self):
+
         # reduce amount of coordinates, since double coordinates aren't needed to correctly draw lines. 
         metaData = self.quadTree.getAllSquareMetadata()
         used = []
@@ -116,7 +115,6 @@ class MainModel:
                             foundPlace = True
                             break
         return used
-
 
     def compare(self, v1, v2):
         if v1 == v2:

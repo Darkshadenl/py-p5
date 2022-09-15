@@ -124,30 +124,7 @@ class TestQuad(unittest.TestCase):
         
         metaData = self.q.getAllSquareMetadataFlat()
         self.assertEqual(40, len(metaData))
-        
     
-    def test_order_of_sorted_squares(self):
-        mainModel = MainModel(400, 400 , 4)
-        p1 = Particle(Vector(100, 0, 0), Vector(0,0,0))
-        p2 = Particle(Vector(100, 200, 0), Vector(0,0,0))
-        p3 = Particle(Vector(50, 200, 0), Vector(0,0,0))
-        p4 = Particle(Vector(50, 300, 200), Vector(0,0,0))
-        
-        mainModel.quadTree.add(p1)
-        mainModel.quadTree.add(p2)
-        mainModel.quadTree.add(p3)
-        mainModel.quadTree.add(p4)
-        
-        metaData = mainModel.getAllSquareCoordinatesSorted()
-        
-        expected = [
-            Vector(0,0,0),
-            Vector(0,400,0),
-            Vector(400,0,0),
-            Vector(400,400,0)
-        ]
-        
-        self.assertEqual(metaData, expected)
         
         
         
