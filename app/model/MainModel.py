@@ -70,52 +70,6 @@ class MainModel:
             ents.extend(e)
         return ents
 
-
-        # reduce amount of coordinates, since double coordinates aren't needed to correctly draw lines. 
-        metaData = self.quadTree.getAllSquareMetadata()
-        used = []
-        biggestCoordinate = None
-        
-        for coordinate in metaData:
-            if len(used) == 0:
-                used.append(coordinate)
-                biggestCoordinate = coordinate
-            else:
-                l = self.compare(coordinate, biggestCoordinate)
-                
-                if l == 0 :
-                    continue
-                
-                if (l > 0):
-                    biggestCoordinate = coordinate
-                    used.append(coordinate)
-                    
-                if (l < 0):
-                    foundPlace = False
-                    beenSmaller = False
-                    beenBigger = False
-                    index = -1
-                    
-                    while(foundPlace == False or index != len(used)):
-                        print({'index': index, 'usedLength': len(used)})
-                        index += 1
-                        v = used[index]
-                        c = self.compare(coordinate, v)
-                    
-                        if c == 0:
-                            break                     # No need to add
-                        elif c == -1:
-                            beenSmaller = True
-                        elif c == 1:
-                            beenBigger = True
-    
-                        if (beenSmaller and beenBigger):
-                            # found a position
-                            used.insert(index, coordinate)
-                            foundPlace = True
-                            break
-        return used
-
     def compare(self, v1, v2):
         if v1 == v2:
             return 0
