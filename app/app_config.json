@@ -16,6 +16,8 @@
     "randomPosition": false,
     "xMin": 280,
     "xMax": 300,
-    "gravity": 1.5,
-    "wind": 1
+    "gravity": 0,
+    "wind": 0,
+    "gravitySteps": 1,
+    "windSteps": 1
 }

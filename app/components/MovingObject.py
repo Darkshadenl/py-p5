@@ -14,9 +14,7 @@ class MovingObject(ScreenObject):
         self.mass = float(0)
         # self.velocity = Vector.random_2D()
         # self.velocity = self.velocity * random_uniform(vVelocity.x, vVelocity.y)
-        
-        forceMin = c['forceMin']
-        forceMax = c['forceMax']
+    
         
     def applyForce(self, force):
         f = force / self.mass
