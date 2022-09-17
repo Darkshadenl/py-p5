@@ -1,6 +1,6 @@
 import logging
 from app.config import data as config
-from p5 import ellipse, fill, color as c, random_uniform
+from p5 import ellipse, fill, color as c, random_uniform, Vector
 from .MovingObject import MovingObject
 
 
@@ -10,7 +10,16 @@ class Particle(MovingObject):
     super().__init__(vXY, 40, 40, vVelocity)
     self.changeColor()
     self.logger = logging.getLogger()
-    self.particleSize = config["particleSize"]
+    randomParticleSize = config["randomParticleSize"]
+    
+    if randomParticleSize:
+      sizeMin = config["particleSizeMin"]
+      sizeMax = config["particleSizeMax"]
+      self.particleSize = random_uniform(sizeMax, sizeMin)
+    else:
+      self.particleSize = config["particleSize"]
+      
+    self.mass = float(self.particleSize)
 
   def __repr__(self) -> str:
     return f"{self.pos.x} {self.pos.y}"

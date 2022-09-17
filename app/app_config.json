@@ -1,16 +1,21 @@
 {
-    "debug": true,
+    "debug": false,
     "canvasHeight": 400,
     "canvasWidth": 400,
     "canvasBackgroundColor": "red",
-    "numberOfEntities": 10,
+    "numberOfEntities": 5,
     "subdivideCount": 4,
+    "randomParticleSize": true,
+    "particleSizeMin": 2,
+    "particleSizeMax": 60,
     "particleSize": 10,
     "maxWHsplit": 25,
-    "noVelocity": false,
-    "velocityMin": 1.5,
+    "noVelocity": true,
+    "velocityMin": 1,
     "velocityMax": 2,
-    "noPosition": false,
-    "xMin": 0.1,
-    "xMax": 50
+    "randomPosition": false,
+    "xMin": 280,
+    "xMax": 300,
+    "gravity": 1.5,
+    "wind": 1
 }

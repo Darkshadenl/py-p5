@@ -1,6 +1,10 @@
 import logging
 from p5 import *
 from app.components.Particle import Particle
+from app.control.ForceHandler import ForceHandler
+from app.control.GravityHandler import GravityHandler
+from app.control.InvertForceHandler import InvertForceHandler
+from app.control.WindHandler import WindHandler
 from model.MainModel import MainModel
 from app.config import data as c
 
@@ -10,12 +14,39 @@ class GeneralController:
         self.logger = logging.getLogger()
         self.width = width
         self.height = height
+        enableForces = True
+        invertForce = False
+        applyWind = False
+        gravity = Vector(0, c["gravity"])
+        wind = Vector(c["wind"], 0)
+        
         if c["debug"] == True:
             self.enableBorders = True
         else: 
             self.enableBorders = False
+        
         self.mainModel = MainModel(width, height, numberOfEntities)
         self.mainModel.setup()
+        
+        self.forceBooleans = {
+            "enabled": enableForces,
+            "inverted": invertForce,
+            "applyWind": applyWind, 
+            "wind": wind,
+            "gravity": gravity
+        }
+        
+        self.handlerSetup()
+        
+    def handlerSetup(self):
+        fb = self.forceBooleans
+        fHandler = ForceHandler(fb['enabled'])
+        iHandler = InvertForceHandler(fb['inverted'])
+        gHandler = GravityHandler(fb['gravity'])
+        wHandler = WindHandler(fb['wind'])
+        
+        fHandler.set_next(iHandler).set_next(gHandler).set_next(wHandler)
+        self.handler = fHandler
         
     def update(self):
         entities = self.mainModel.quadTree.getAllEntitiesClear()
@@ -25,6 +56,17 @@ class GeneralController:
     def draw(self, entities):
         for entity in entities:
             self.logger.debug('Drawing from generalController')
+            
+            self.handler.handle()
+            
+            # if self.enableForces:
+            #     entity.applyForce(self.gravity)
+            #     # entity.applyForce(self.wind)
+            #     if self.invertForce:
+            #         self.wind = -self.wind
+            #         self.gravity = -self.gravity
+            #         self.invertForce = False
+                
             entity.draw()
                 
     def drawBorders(self):
@@ -42,15 +84,14 @@ class GeneralController:
             self.__drawVectorBorder(metaData.southWestCorner, metaData.northWestCorner)
             
             if len(metaData.entities) >= 2:
-                mData = metaData.entities
-                for i in range(0, len(mData)):
+                ents = metaData.entities
+                for i in range(0, len(ents)):
                     try:                        
-                        self.__drawParticleBorder(mData[i], mData[i + 1])
+                        self.__drawParticleBorder(ents[i], ents[i + 1])
                     except:
-                        self.__drawParticleBorder(mData[i], mData[0])
-                    
+                        self.__drawParticleBorder(ents[i], ents[0])
    
-        
+                    
     def __drawParticleBorder(self, vP1, vP2):
         if vP2 is None:
             return
@@ -64,6 +105,8 @@ class GeneralController:
         
     
     def mouse_pressed(self, event):
+        self.applyWind = True
+        
         if c["debug"] == True:
             x = event.x
             y = event.y
@@ -75,6 +118,8 @@ class GeneralController:
                           random_uniform(c["velocityMin"], c["velocityMax"]))
                 self.mainModel.addEntity(Particle(Vector(x, y), vel))
                 
+    def mouse_released(self, event):
+        self.applyWind = False
 
     def key_pressed(self, event):
         self.logger.debug('key pressed')
@@ -84,6 +129,12 @@ class GeneralController:
         if k == '5':
             self.logger.info('refreshing active squares')
             self.mainModel.activeSquaresTracker.refresh()
+        
+        if k == 'f':
+            self.enableForces = not self.enableForces
+        if k == 's':
+            # invert forces
+            self.invertForce = True
         
         if c["debug"] == True:
             if (k == 'd'):

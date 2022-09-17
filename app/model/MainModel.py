@@ -55,9 +55,9 @@ class MainModel:
             return Vector(0,  0)
     
     def setupPosition(self):
-        noPosition = c["noPosition"]
+        randomPosition = c["randomPosition"]
         
-        if noPosition == False:
+        if randomPosition == True:
             self.logger.info("Random position")
             return Vector(random_uniform(0.1, c["canvasWidth"] - 1),  random_uniform(0.1, c["canvasHeight"] - 1))
         else:

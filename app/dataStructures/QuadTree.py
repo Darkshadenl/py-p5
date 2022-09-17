@@ -286,4 +286,4 @@ class QuadTree:
             
             locationList.append(f"{self.tag}:{self.depth}")
             return locationList
-            
+    
