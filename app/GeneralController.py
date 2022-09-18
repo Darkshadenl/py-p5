@@ -1,5 +1,5 @@
 import logging
-from p5 import *
+from p5 import Vector, line, stroke, stroke_weight, random_uniform
 from app.components.Particle import Particle
 from app.control.ForceHandler import ForceHandler
 from app.control.GravityHandler import GravityHandler
@@ -7,16 +7,18 @@ from app.control.InvertForceHandler import InvertForceHandler
 from app.control.WindHandler import WindHandler
 from model.MainModel import MainModel
 from app.config import data as c
+from pathos.multiprocessing import ProcessingPool as Pool
+import time
 
 class GeneralController:
     
     def __init__(self, width, height, numberOfEntities) -> None:
-        self.logger = logging.getLogger()
+        self.logger = logging.getLogger('GeneralController')
         self.width = width
         self.height = height
+        applyWind = True
         enableForces = True
         invertForce = False
-        applyWind = False
         increaseWind = False
         decreaseWind = False
         increaseGravity = False
@@ -47,7 +49,10 @@ class GeneralController:
         }
         
         self.handlerSetup()
-        
+    
+    def setPool(self,arg):
+        self.p : Pool = arg
+    
     def handlerSetup(self):
         fb = self.forcesConfig
         fHandler = ForceHandler(fb)
@@ -60,10 +65,19 @@ class GeneralController:
         
     def update(self):
         entities : list[Particle] = self.mainModel.quadTree.getAllEntitiesClear()
+        self.mainModel.activeSquaresTracker.refresh()
+        
+        # with self.p as p:
+        #     self.p.map(self.handler.handle, entities)
+        #     self.p.
+        start_t = time.perf_counter()
         self.draw(entities)
+        end_t = time.perf_counter()
+        dur = end_t - start_t
+        self.logger.info(f'Draw took: {dur}')
         self.drawBorders()
 
-    def draw(self, entities: list[Particle]):
+    def draw(self, entities):
         for entity in entities:
             self.logger.debug('Drawing from generalController')
             self.handler.handle(entity)
@@ -74,7 +88,6 @@ class GeneralController:
             return
         
         # squareMetaData = self.mainModel.quadTree.getAllSquareMetaDataGrouped([])
-        self.mainModel.activeSquaresTracker.refresh()
         squareMetaData = self.mainModel.activeSquaresTracker.active
         
         for metaData in squareMetaData:
@@ -103,7 +116,6 @@ class GeneralController:
         stroke("blue")
         stroke_weight(2)
         
-    
     def mouse_pressed(self, event):
         self.forcesConfig['applyWind'] = True
         
@@ -143,12 +155,7 @@ class GeneralController:
         if k == 'w':
             self.forcesConfig['applyWind'] = not self.forcesConfig['applyWind']
             enabled = self.forcesConfig['applyWind']
-            
-            if enabled:
-                message = 'Wind enabled.'
-            else:
-                message = 'Wind disabled.'
-            
+            message = 'Wind enabled' if enabled == True else 'Wind disabled.'
             self.logger.critical(message)
             
         if k == 'UP':

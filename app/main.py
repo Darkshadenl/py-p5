@@ -4,6 +4,7 @@ import logging
 from app.config import data as app_config
 from app.GeneralController import GeneralController 
 from concurrent.futures import ThreadPoolExecutor as Executor
+from pathos.multiprocessing import ProcessingPool as Pool
 
 
 logger = logging.getLogger() 
@@ -34,9 +35,12 @@ def key_pressed(event):
   controller.key_pressed(event)
 
 if __name__ == "__main__":
+  p = Pool()
+  controller.setPool(p)
+  
   try:
     logging.basicConfig(level=logging.INFO) 
-    with Executor(max_workers=4) as exe:  
+    with Executor(max_workers=5) as exe:  
             exe.submit(run)
   except:
     print('bye')

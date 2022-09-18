@@ -7,6 +7,7 @@ class ActiveSquaresTracker:
     
     def __init__(self) -> None:
         self.active = np.empty(0)
+        self.logger = logging.getLogger('ActiveSquaresTracker')
         
     def add(self, square):
         if (isinstance(square, q.QuadTree)):
@@ -28,9 +29,9 @@ class ActiveSquaresTracker:
                         if self.active[i] == s:
                             self.active = np.delete(self.active, i)
         except Exception as e:
-            logging.warning(e)
-            logging.warning('Removing from activesquares failed. Moving on...')
-            logging.warning(f'Active squares {self.active}')
+            self.logger.warning(e)
+            self.logger.warning('Removing from activesquares failed. Moving on...')
+            self.logger.warning(f'Active squares {self.active}')
                                 
     def refresh(self):
         for i in range(0, len(self.active)-1):

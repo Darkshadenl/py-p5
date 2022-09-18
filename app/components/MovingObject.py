@@ -3,6 +3,7 @@ from p5 import Vector, random_uniform
 from .ScreenObject import ScreenObject
 from app.config import data as c
 import logging
+from concurrent.futures import ThreadPoolExecutor as Executor
 
 class MovingObject(ScreenObject):
     
@@ -39,7 +40,8 @@ class MovingObject(ScreenObject):
         if (not isElementInSquare):
             tempQuadTree = self.quadTree
             # find new square. self.quadtree automatically gets updated by doing 'add'
-            self.quadTree.head.add(self)                        
+            
+            self.quadTree.head.add(self)    
             tempQuadTree.removeEntity(self)
             tempQuadTree.desplitCheck()
             logging.debug(f"\n\n Element no longer in square {self.pos.x} {self.pos.y}")
