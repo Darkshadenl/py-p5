@@ -4,7 +4,8 @@ from app.dataStructures.QuadTree import QuadTree
 
 class ScreenObject:
     
-    def __init__(self, vXY, width, height):
+    def __init__(self, vXY, width, height, id: -1):
+        self.id = id
         self.width = width
         self.height = height
         self.widthOffset = width / 2

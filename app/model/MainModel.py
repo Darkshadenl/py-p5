@@ -1,4 +1,5 @@
 import logging
+from app.dataStructures.QTree import QTree
 
 from app.dataStructures.QuadTree import QuadTree
 from p5 import Vector,  random_uniform
@@ -20,6 +21,7 @@ class MainModel:
         self.quadTree.head = self.quadTree
         self.undoTracker.add(self.quadTree)
         self.activeSquaresTracker = squareTracker
+        self.QTree = QTree(c["canvasWidth"])
         
     
     def addEntity(self, Particle):
@@ -42,6 +44,7 @@ class MainModel:
             particle = Particle(vXY, velocity)
             self.entities.append(particle)
             self.quadTree.add(particle)
+            self.QTree.add(particle)
         
     def setupVelocity(self):
         noVelocity = c["noVelocity"]

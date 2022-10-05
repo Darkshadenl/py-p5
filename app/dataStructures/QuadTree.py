@@ -36,6 +36,7 @@ class QuadTree:
         self.entities = []
         self.squares = {}
         self.subdivided = False
+        self.append = self.entities.append
 
         self.halfWidth = self.width / 2
         self.halfHeight = self.height / 2
@@ -48,7 +49,7 @@ class QuadTree:
         if not self.subdivided:
             self.logger.debug(f'entity with x: {entity.pos.x}')
             self.logger.debug(f'added to {self.tag} at depth {self.depth}')
-            self.entities.append(entity)
+            self.append(entity)
             entity.setQuadTree(self)
             
             if not self.tracked:
@@ -201,8 +202,7 @@ class QuadTree:
         entities = self.getAllEntitiesClear()
         
         for e in entities:
-            if isinstance(e, particle.Particle):
-                e.setQuadTree(self)
+            e.setQuadTree(self)
         
         self.entities.extend(entities)
         self.clearEntitiesInChildren()

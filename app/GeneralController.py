@@ -7,7 +7,6 @@ from app.control.InvertForceHandler import InvertForceHandler
 from app.control.WindHandler import WindHandler
 from model.MainModel import MainModel
 from app.config import data as c
-from pathos.multiprocessing import ProcessingPool as Pool
 import time
 
 class GeneralController:
@@ -50,9 +49,6 @@ class GeneralController:
         
         self.handlerSetup()
     
-    def setPool(self,arg):
-        self.p : Pool = arg
-    
     def handlerSetup(self):
         fb = self.forcesConfig
         fHandler = ForceHandler(fb)
@@ -64,8 +60,7 @@ class GeneralController:
         self.handler = fHandler
         
     def update(self):
-        entities : list[Particle] = self.mainModel.quadTree.getAllEntitiesClear()
-        self.mainModel.activeSquaresTracker.refresh()
+        entities : list[Particle] = self.mainModel.entities
         
         # with self.p as p:
         #     self.p.map(self.handler.handle, entities)
@@ -74,20 +69,28 @@ class GeneralController:
         self.draw(entities)
         end_t = time.perf_counter()
         dur = end_t - start_t
-        self.logger.info(f'Draw took: {dur}')
+        # self.logger.info(f'Draw took: {dur}')
         self.drawBorders()
 
-    def draw(self, entities):
+    def draw(self, entities: list[Particle]):
+        counter = time.perf_counter
         for entity in entities:
             self.logger.debug('Drawing from generalController')
             self.handler.handle(entity)
+            
+            ent_t_s = counter() # TODO remove
             entity.draw()
+            ent_t_e = counter() # TODO remove
+            
+            ent = ent_t_e - ent_t_s # TODO remove
+            # self.logger.info(f"drawTime: {round(ent, 5)}") # TODO remove
                 
     def drawBorders(self):
         if (self.enableBorders == False):
             return
         
         # squareMetaData = self.mainModel.quadTree.getAllSquareMetaDataGrouped([])
+        self.mainModel.activeSquaresTracker.refresh()
         squareMetaData = self.mainModel.activeSquaresTracker.active
         
         for metaData in squareMetaData:

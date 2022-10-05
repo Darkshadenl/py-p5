@@ -6,8 +6,8 @@ from .MovingObject import MovingObject
 
 class Particle(MovingObject):
 
-  def __init__(self, vXY, vVelocity):
-    super().__init__(vXY, 40, 40, vVelocity)
+  def __init__(self, vXY, vVelocity, id):
+    super().__init__(vXY, 40, 40, vVelocity, id)
     self.changeColor()
     self.logger = logging.getLogger()
     randomParticleSize = config["randomParticleSize"]
@@ -21,8 +21,8 @@ class Particle(MovingObject):
       
     self.mass = float(self.particleSize)
 
-  def __repr__(self) -> str:
-    return f"{self.pos.x} {self.pos.y}"
+  # def __repr__(self) -> str:
+  #   return f"Particle with pos:{self.pos}"
 
   def draw(self):
     self.logger.debug('Drawing of particle')
